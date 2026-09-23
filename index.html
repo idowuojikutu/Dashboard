@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A polished personal command center built with HTML5, Tailwind CSS and JavaScript.">
+  <title>Orbit — Personal Command Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        fontFamily: { sans: ['Inter','ui-sans-serif','system-ui'] },
+        boxShadow: { glow: '0 0 50px rgba(99,102,241,.18)' }
+      }}
+    }
+  </script>
+  <style>
+    html { scroll-behavior:smooth }
+    body { background:#070914 }
+    .glass { background:rgba(15,23,42,.62); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); border:1px solid rgba(148,163,184,.11) }
+    .grid-bg { background-image:linear-gradient(rgba(148,163,184,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,.035) 1px,transparent 1px); background-size:32px 32px }
+    .orb { filter:blur(70px); opacity:.35 }
+    .task-done { text-decoration:line-through; opacity:.45 }
+    ::-webkit-scrollbar { width:8px } ::-webkit-scrollbar-track { background:#070914 } ::-webkit-scrollbar-thumb { background:#1e293b; border-radius:20px }
+  </style>
+</head>
+<body class="min-h-screen text-slate-100 font-sans selection:bg-indigo-500/30">
+  <div class="fixed inset-0 grid-bg pointer-events-none"></div>
+  <div class="fixed -top-32 -left-24 w-96 h-96 rounded-full bg-indigo-600 orb pointer-events-none"></div>
+  <div class="fixed top-1/3 -right-32 w-96 h-96 rounded-full bg-fuchsia-600 orb pointer-events-none"></div>
+
+  <header class="sticky top-0 z-30 border-b border-white/5 bg-[#070914]/75 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-5 lg:px-8 h-16 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3">
+        <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-400 to-fuchsia-500 grid place-items-center shadow-glow">✦</span>
+        <span class="font-bold tracking-tight">ORBIT<span class="text-indigo-400">.</span></span>
+      </a>
+      <div class="flex items-center gap-3">
+        <span id="clock" class="hidden sm:block text-xs text-slate-400 tabular-nums"></span>
+        <button id="themeBtn" class="glass rounded-xl px-3 py-2 text-sm hover:bg-white/10 transition" aria-label="Toggle theme">◐</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative max-w-7xl mx-auto px-5 lg:px-8 py-8">
+    <section class="mb-8">
+      <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
+        <div>
+          <p class="text-sm text-indigo-300 mb-2">PERSONAL COMMAND CENTER</p>
+          <h1 class="text-4xl md:text-6xl font-black tracking-tight">Make today <span class="bg-gradient-to-r from-indigo-300 via-violet-300 to-fuchsia-300 bg-clip-text text-transparent">count.</span></h1>
+          <p class="text-slate-400 mt-3 max-w-xl">A focused space for priorities, progress and momentum. Everything important, one glance away.</p>
+        </div>
+        <button id="focusBtn" class="rounded-2xl px-5 py-3 bg-white text-slate-950 font-semibold hover:scale-[1.02] active:scale-95 transition shadow-lg">Start focus session →</button>
+      </div>
+    </section>
+
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="glass rounded-3xl p-5"><p class="text-xs text-slate-500 uppercase tracking-widest">Tasks done</p><div class="flex items-end justify-between mt-3"><span id="doneStat" class="text-3xl font-bold">0</span><span class="text-emerald-400 text-xs">today</span></div></div>
+      <div class="glass rounded-3xl p-5"><p class="text-xs text-slate-500 uppercase tracking-widest">Progress</p><div class="flex items-end justify-between mt-3"><span id="progressStat" class="text-3xl font-bold">0%</span><span class="text-indigo-400 text-xs">momentum</span></div></div>
+      <div class="glass rounded-3xl p-5"><p class="text-xs text-slate-500 uppercase tracking-widest">Focus</p><div class="flex items-end justify-between mt-3"><span id="focusStat" class="text-3xl font-bold">25:00</span><span class="text-fuchsia-400 text-xs">timer</span></div></div>
+      <div class="glass rounded-3xl p-5"><p class="text-xs text-slate-500 uppercase tracking-widest">Streak</p><div class="flex items-end justify-between mt-3"><span class="text-3xl font-bold">07</span><span class="text-amber-400 text-xs">days 🔥</span></div></div>
+    </section>
+
+    <section class="grid lg:grid-cols-[1.35fr_.65fr] gap-6">
+      <div class="glass rounded-3xl p-5 md:p-7">
+        <div class="flex items-center justify-between mb-6">
+          <div><h2 class="text-xl font-bold">Today's priorities</h2><p class="text-sm text-slate-500 mt-1">Keep the list short. Keep moving.</p></div>
+          <button id="clearBtn" class="text-xs text-slate-500 hover:text-white transition">Clear completed</button>
+        </div>
+        <form id="taskForm" class="flex gap-2 mb-5">
+          <input id="taskInput" required maxlength="80" class="min-w-0 flex-1 bg-slate-950/70 border border-white/10 rounded-2xl px-4 py-3 outline-none focus:border-indigo-400/60 placeholder:text-slate-600" placeholder="Add a priority…">
+          <button class="rounded-2xl px-4 bg-indigo-500 hover:bg-indigo-400 font-semibold transition">Add</button>
+        </form>
+        <div id="taskList" class="space-y-2"></div>
+      </div>
+
+      <aside class="space-y-6">
+        <div class="glass rounded-3xl p-6">
+          <div class="flex items-center justify-between"><h2 class="font-bold">Focus room</h2><span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_12px_#34d399]"></span></div>
+          <p class="text-sm text-slate-500 mt-1">One session. One outcome.</p>
+          <div class="my-7 text-center">
+            <div id="timer" class="text-6xl font-black tabular-nums tracking-tighter">25:00</div>
+            <div class="h-1.5 bg-slate-800 rounded-full mt-5 overflow-hidden"><div id="bar" class="h-full bg-gradient-to-r from-indigo-400 to-fuchsia-400 w-0 transition-all"></div></div>
+          </div>
+          <div class="grid grid-cols-2 gap-2"><button id="timerBtn" class="rounded-xl py-3 bg-indigo-500 hover:bg-indigo-400 font-semibold">Start</button><button id="resetBtn" class="rounded-xl py-3 bg-white/5 hover:bg-white/10">Reset</button></div>
+        </div>
+        <div class="rounded-3xl p-6 bg-gradient-to-br from-indigo-500/15 to-fuchsia-500/10 border border-indigo-400/10">
+          <p class="text-xs uppercase tracking-widest text-indigo-300">Daily note</p>
+          <p class="text-lg font-semibold mt-3 leading-relaxed">“Consistency makes ordinary days compound into extraordinary results.”</p>
+        </div>
+      </aside>
+    </section>
+
+    <footer class="py-10 text-center text-xs text-slate-600">
+      Crafted with HTML5, Tailwind CSS & JavaScript · <span class="text-slate-400">Idowu Ojikutu</span> · 2026
+    </footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
